@@ -8,8 +8,17 @@ use Tests\TestCase;
 
 class ProjectsTest extends TestCase
 {
+    use WithFaker, RefreshDatabase;
+
     public function testAUserCanCreateProjects()
     {
-        
+        $this->withoutExceptionHandling();
+        $attributes = [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph
+        ];
+        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $this->assertDatabaseHas('projects', $attributes);
+        $this->get('/projects')->assertSee($attributes['title']);
     }
 }
