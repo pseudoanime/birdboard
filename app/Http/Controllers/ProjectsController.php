@@ -8,7 +8,8 @@ class ProjectsController extends Controller
 {
     public function store()
     {
-        \App\Models\Project::create(['title' => request('title'), 'description' => request('description')]);
+        $attributes = \request()->validate(['title' => 'required', 'description' => 'required']);
+        \App\Models\Project::create($attributes);
         return redirect('/projects');
     }
 
