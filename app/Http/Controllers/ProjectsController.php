@@ -7,10 +7,21 @@ use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
 {
+    /**
+     * ProjectsController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth')->only('store');
+    }
+
     public function store()
     {
-        $attributes = \request()->validate(['title' => 'required', 'description' => 'required']);
-        \App\Models\Project::create($attributes);
+        $attributes = \request()->validate(
+            ['title' => 'required', 'description' => 'required']
+        );
+
+        auth()->user()->projects()->create($attributes);
         return redirect('/projects');
     }
 
