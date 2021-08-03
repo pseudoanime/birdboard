@@ -1,3 +1,5 @@
-@foreach($projects as $project)
-    {{$project->title}}
-@endforeach
+@forelse($projects as $project)
+    <a href="{{$project->path()}}"> {{$project->title}}</a><br>
+@empty
+    No projects
+@endforelse

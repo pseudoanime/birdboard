@@ -19,12 +19,4 @@ Route::get(
         return view('welcome');
     }
 );
-Route::post(
-    'projects',
-    'App\Http\Controllers\ProjectsController@store'
-);
-
-Route::get(
-    'projects',
-    'App\Http\Controllers\ProjectsController@index'
-);
+Route::resource('projects', \App\Http\Controllers\ProjectsController::class);
