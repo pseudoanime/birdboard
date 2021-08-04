@@ -38,18 +38,44 @@ class ProjectsTest extends TestCase
         );
     }
 
-    public function testAProjectCanBeViewed()
+    public function testGuestsMaynotViewProjects()
     {
-        $this->withoutExceptionHandling();
         $project = Project::factory()->create();
         $this->get($project->path())
-             ->assertSee($project->title)
-             ->assertSee($project->description);
+            ->assertRedirect('/login');
     }
 
     public function testOnlyAuthenticatedUsersCanCreateProjects()
     {
         $attributes = Project::factory()->raw();
         $this->post('/projects', $attributes)->assertRedirect('login');
+    }
+
+    public function testAUserCanOnlyViewTheirOwnProjectsInIndex()
+    {
+        $project = Project::factory()->create();
+        $user = $project->owner;
+        $nonProject = Project::factory()->create();
+        $this->actingAs($user)
+             ->get('/projects')
+             ->assertSee($project->title)
+             ->assertDontSee($nonProject->title);
+    }
+    public function testAProjectCanBeViewedByOwner()
+    {
+        $this->withoutExceptionHandling();
+        $project = Project::factory()->create();
+        $this->actingAs($project->owner)
+             ->get($project->path())
+             ->assertSee($project->title)
+             ->assertSee($project->description);
+    }
+    public function testAUserCannotViewProjectsNotCreatedByThem()
+    {
+        $project = Project::factory()->create();
+        $otherUser = User::factory()->create();
+        $this->actingAs($otherUser)
+             ->get($project->path())
+             ->assertForbidden();
     }
 }

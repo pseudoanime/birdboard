@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
 {
@@ -12,7 +11,7 @@ class ProjectsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->only('store');
+        $this->middleware('auth');
     }
 
     public function store()
@@ -27,12 +26,15 @@ class ProjectsController extends Controller
 
     public function index()
     {
-        $projects = \App\Models\Project::all();
+        $projects = auth()->user()->projects;
         return view('projects.index', compact('projects'));
     }
 
     public function show(Project $project)
     {
+        if (auth()->user()->cannot('view', $project)) {
+            abort(403);
+        }
         return view('projects.show', compact('project'));
     }
 }
